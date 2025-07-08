@@ -1,0 +1,66 @@
+"""
+Created on Sat Mar  8 09:21:21 2025
+
+@author: salvador
+"""
+
+import os
+import zipfile
+import shutil
+import tempfile
+
+def move_and_rename_files(src_dir, dest_dir):
+    # Dictionary to keep track of file names and their counts
+    file_count = {}
+
+    for root, _, files in os.walk(src_dir):
+        for file in files:
+            src_file_path = os.path.join(root, file)
+            dest_file_path = os.path.join(dest_dir, file)
+
+            # Check if the file name already exists in the destination directory
+            if os.path.exists(dest_file_path):
+                # If it exists, increment the count and rename the file
+                base, ext = os.path.splitext(file)
+                count = file_count.get(file, 0) + 1
+                new_file_name = f"{base}_{chr(96 + count)}{ext}"
+                dest_file_path = os.path.join(dest_dir, new_file_name)
+                file_count[file] = count
+            else:
+                # Initialize the count for this file
+                file_count[file] = 0
+
+            # Move the file to the destination directory
+            shutil.move(src_file_path, dest_file_path)
+
+# Define the folder path containing the .zip files
+folder_path = 'C:\\Users\\salvador'
+output_folder = 'C:\\Users\\salvador'
+
+# Ensure the output folder exists
+os.makedirs(output_folder, exist_ok=True)
+
+# Iterate over all files in the folder
+for filename in os.listdir(folder_path):
+    # Check if the file is a .zip file
+    if filename.endswith('.zip'):
+        file_path = os.path.join(folder_path, filename)
+        
+        # Create a subdirectory in the output folder named after the .zip file (without extension)
+        folder_name = os.path.splitext(filename)[0]  # Remove the .zip extension
+        extract_path = os.path.join(output_folder, folder_name)
+        os.makedirs(extract_path, exist_ok=True)
+        
+        # Create a temporary directory for extraction
+        with tempfile.TemporaryDirectory() as temp_dir:
+            # Open the .zip file
+            with zipfile.ZipFile(file_path, 'r') as zip_ref:
+                # Extract all contents to the temporary directory
+                zip_ref.extractall(path=temp_dir)
+            
+            # Move and rename files from the temporary directory to the final extraction path
+            move_and_rename_files(temp_dir, extract_path)
+
+        print(f"Extracted and flattened: {filename} to {extract_path}")
+
+print("All .zip files have been extracted and flattened.")
