@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 Created on Thu Jun  5 18:00:01 2025
 
@@ -66,7 +67,7 @@ def plot_results(ns, times, cpu_usages, memory_usages):
     plt.show()
 
 if __name__ == "__main__":
-    ns = range(1, 3)
+    ns = range(1, 51) # Will run Fibonacci(5) to Fibonacci(10) if ns = range(5, 11)
     times = []
     cpu_usages = []
     memory_usages = []
@@ -80,4 +81,31 @@ if __name__ == "__main__":
 
     plot_results(ns, times, cpu_usages, memory_usages)
     
+# -------------------------------
+# Save Results to CSV with Date
+# -------------------------------
+# Create a DataFrame with the results
+    results_df = pd.DataFrame({
+        'n': ns,
+        'Time_Taken_sec': times,
+        'CPU_Usage_percent': cpu_usages,
+        'Memory_Usage_percent': memory_usages
+    })
     
+    # Define the folder path where you want to save the file
+    folder_path = r'D:\sgtzp\OneDrive\Python\\Computer_Test_and_Series'  # Use raw string to avoid backslash issues
+    
+    # Ensure the folder exists
+    os.makedirs(folder_path, exist_ok=True)
+    
+    # Generate a filename with the current date
+    current_date = datetime.now().strftime("%Y-%m-%d")
+    file_name = f"fibonacci_results_{current_date}.csv"
+    
+    # Create full file path
+    file_path = os.path.join(folder_path, file_name)
+    
+    # Save to CSV
+    results_df.to_csv(file_path, index=False)
+    print(f"Results saved to {file_path}")
+        
