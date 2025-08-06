@@ -93,7 +93,7 @@ if __name__ == "__main__":
     })
     
     # Define the folder path where you want to save the file
-    folder_path = r'D:\sgtzp\OneDrive\Python\\Computer_Test_and_Series'  # Use raw string to avoid backslash issues
+    folder_path = r'D:\salvador'  # Use raw string to avoid backslash issues
     
     # Ensure the folder exists
     os.makedirs(folder_path, exist_ok=True)
