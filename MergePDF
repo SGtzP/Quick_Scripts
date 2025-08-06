@@ -1,0 +1,40 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Wed Aug  6 13:02:05 2025
+
+@author: sgtzp
+"""
+
+import os
+from PyPDF2 import PdfMerger
+
+def merge_pdfs_in_folder(folder_path, output_filename):
+    merger = PdfMerger()
+
+    # Get all PDF files in the folder and sort them alphabetically
+    pdf_files = sorted([
+        f for f in os.listdir(folder_path)
+        if f.lower().endswith(".pdf")
+    ])
+
+    if not pdf_files:
+        print("No PDF files found in the specified folder.")
+        return
+
+    # Append each PDF to the merger
+    for pdf_file in pdf_files:
+        full_path = os.path.join(folder_path, pdf_file)
+        print(f"Adding: {pdf_file}")
+        merger.append(full_path)
+
+    # Save the merged file
+    output_path = os.path.join(folder_path, output_filename)
+    merger.write(output_path)
+    merger.close()
+    print(f"Merged PDF saved as: {output_path}")
+
+# Example usage
+folder_path = r"D:\salvador\Merge_Folder"  # <-- Replace with your folder path
+output_filename = "Output.pdf"
+
+merge_pdfs_in_folder(folder_path, output_filename)
