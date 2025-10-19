@@ -1,0 +1,101 @@
+from ics import Calendar, Event
+from datetime import datetime, timedelta
+import os
+import pytz
+
+# SET YOUR MONDAY START DATE HERE
+custom_monday_str = "2025-10-06"
+custom_monday = datetime.strptime(custom_monday_str, "%Y-%m-%d")
+
+# Set timezone to Pacific Time
+pacific = pytz.timezone("America/Los_Angeles")
+
+# Weekly schedule
+schedule = {
+    "Monday": [
+        ("08:00", "10:00", "FFT project"),
+        ("10:00", "12:00", "Job search"),
+        ("12:00", "13:00", "Lunch/Family"),
+        ("13:00", "15:00", "Admin + email"),
+        ("15:00", "17:00", "Battery DB"),
+        ("18:00", "20:00", "Family/Dinner"),
+        ("20:00", "21:00", "Python practice"),
+    ],
+    "Tuesday": [
+        ("08:00", "10:00", "SPC dashboard"),
+        ("10:00", "12:00", "Deep coding (Python)"),
+        ("12:00", "13:00", "Lunch/Family"),
+        ("13:00", "15:00", "Light reading"),
+        ("15:00", "17:00", "FFT light tasks"),
+        ("18:00", "20:00", "Family/Dinner"),
+        ("20:00", "21:00", "Job applications"),
+    ],
+    "Wednesday": [
+        ("08:00", "10:00", "FFT project"),
+        ("10:00", "12:00", "Diff eqn review"),
+        ("12:00", "13:00", "Lunch/Family"),
+        ("13:00", "15:00", "Admin + email"),
+        ("15:00", "17:00", "SPC dashboard"),
+        ("18:00", "20:00", "Family/Dinner"),
+        ("20:00", "21:00", "Diff eqn drills"),
+    ],
+    "Thursday": [
+        ("08:00", "10:00", "Battery DB"),
+        ("10:00", "12:00", "Handshake project"),
+        ("12:00", "13:00", "Lunch/Family"),
+        ("13:00", "15:00", "Light reading"),
+        ("15:00", "17:00", "Diff eqn problems"),
+        ("18:00", "20:00", "Family/Dinner"),
+        ("20:00", "21:00", "Job applications"),
+    ],
+    "Friday": [
+        ("08:00", "10:00", "Job prep (apps)"),
+        ("10:00", "12:00", "Writing (cover)"),
+        ("12:00", "13:00", "Lunch/Family"),
+        ("13:00", "15:00", "Admin + email"),
+        ("15:00", "17:00", "Wrap-up week"),
+        ("18:00", "20:00", "Family/Dinner"),
+        ("20:00", "21:00", "Reflection + plan"),
+    ],
+    "Saturday": [
+        ("08:00", "10:00", "Family / flex"),
+        ("10:00", "12:00", "Family / flex"),
+        ("12:00", "13:00", "Lunch/Family"),
+        ("13:00", "15:00", "Errands"),
+        ("15:00", "17:00", "Family"),
+        ("18:00", "20:00", "Family"),
+        ("20:00", "21:00", "Rest or fun reading"),
+    ]
+}
+
+# Create calendar
+cal = Calendar()
+weekday_order = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
+
+# Add events with Pacific Time and recurrence
+for i, day in enumerate(weekday_order):
+    current_date = custom_monday + timedelta(days=i)
+    for start_time, end_time, summary in schedule[day]:
+        start_naive = datetime.combine(current_date, datetime.strptime(start_time, "%H:%M").time())
+        end_naive = datetime.combine(current_date, datetime.strptime(end_time, "%H:%M").time())
+
+        start_dt = pacific.localize(start_naive)
+        end_dt = pacific.localize(end_naive)
+
+        event = Event()
+        event.name = summary
+        event.begin = start_dt.isoformat()
+        event.end = end_dt.isoformat()
+        event.description = "Weekly recurring schedule item"
+        event.rrule = {"freq": "weekly"}
+        cal.events.add(event)
+
+# Save to path
+output_dir = r"D:\Folder_Path_Here"
+os.makedirs(output_dir, exist_ok=True)
+output_path = os.path.join(output_dir, "WeeklyCalendar.ics")
+
+with open(output_path, "w") as f:
+    f.writelines(cal)
+
+print(f" Calendar saved to: {output_path}")
